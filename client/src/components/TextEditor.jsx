@@ -3,6 +3,11 @@ import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
+import SyntaxHighlighter from "react-syntax-highlighter";
+
+import { dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+
+import "../App.css";
 
 function TextEditor() {
   const [saveCode, setSaveCode] = useState(false);
@@ -13,6 +18,8 @@ function TextEditor() {
   const [quill, setQuill] = useState();
 
   const [blockTitle, setBlockTitle] = useState("");
+  const [isFirst, setIsfirst] = useState(true);
+  const [text, setText] = useState("");
 
   // Configure server connection.
   useEffect(() => {
@@ -45,6 +52,7 @@ function TextEditor() {
     q.disable();
     q.setText("loading...");
     setQuill(q);
+    setText(q.getText());
   }, []);
 
   // Handle self text change.
@@ -56,6 +64,7 @@ function TextEditor() {
       if (source !== "user") return;
       // Send only the spcific text changes, not all doc.
       socket.emit("send-changes", delta);
+      setText(quill.getText());
     };
 
     // "text-change" is quill built-in event
@@ -71,6 +80,7 @@ function TextEditor() {
 
     const handler = (delta) => {
       quill.updateContents(delta);
+      setText(quill.getText());
     };
 
     // "text-change" is quill built-in event
@@ -84,15 +94,25 @@ function TextEditor() {
   useEffect(() => {
     if (socket == null || quill == null) return;
 
-    socket.once("load-block", async (block) => {
+    socket.once("load-block", async (block, userCount) => {
       console.log("1", block);
       quill.setText(block.code);
+      setText(quill.getText());
       quill.enable();
-      console.log(block.title);
       setBlockTitle(block.title);
+      console.log("user count!*", userCount);
+      setIsfirst(userCount === 1);
+      // console.log(isFirst);
     });
     socket.emit("get-block", blockId);
   }, [socket, quill, blockId]);
+
+  // Determine whether mentor or student
+  useEffect(() => {
+    if (socket == null) return;
+    socket.emit("is-first");
+    console.log("is first from clie nt");
+  }, [socket]);
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -107,27 +127,39 @@ function TextEditor() {
     return () => {
       socket.emit("unregister-user", socket.id);
     };
-  }, [socket]);
+  }, []);
+
+  useEffect(() => {
+    if (quill == null) return;
+    console.log("is first?", isFirst);
+  }, [isFirst]);
 
   const updateCode = () => {
     if (quill == null || socket == null) return;
     socket.emit("save-block", quill.getContents().ops[0].insert);
   };
-  const tryfunc = () => {
-    // var clients = io.sockets.clients(blockId);
-    // console.log(clients);
-    console.log(io);
-  };
 
   return (
-    <>
-      <span>{blockTitle}</span>
+    <div>
       <div>
-        <div id="container" ref={wrapperRef}></div>
+        <span>{blockTitle}</span>
+
+        <div
+          className={isFirst ? "disp-none" : null}
+          id="container"
+          ref={wrapperRef}
+        ></div>
       </div>
+      {isFirst ? (
+        <span>Mentor mode - Read Only</span>
+      ) : (
+        <span>Student mode - Read and Write</span>
+      )}
       <button onClick={() => updateCode()}>save code</button>
-      <button onClick={() => tryfunc()}>try</button>
-    </>
+      <SyntaxHighlighter language="javascript" style={dark}>
+        {text}
+      </SyntaxHighlighter>
+    </div>
   );
 }
 

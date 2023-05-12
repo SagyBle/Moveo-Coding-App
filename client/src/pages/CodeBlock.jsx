@@ -9,12 +9,10 @@ function CodeBlock() {
 
   return (
     <div>
-      <span>blockid: {blockId}</span>
       <div>
         <TextEditor />
       </div>
       <button onClick={() => navigate("/")}>Back to Lobby</button>
-      <span>current online users:</span>
     </div>
   );
 }

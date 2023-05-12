@@ -8,8 +8,8 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-const blocksState = [
-  { id: "codeBlock1", users: ["sagy123", "moshe123"] },
+var blocksState = [
+  { id: "codeBlock1", users: [] },
   { id: "codeBlock2", users: [] },
   { id: "codeBlock3", users: [] },
   { id: "codeBlock4", users: [] },
@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
   socket.on("get-block", async (blockId) => {
     const block = await getBlock(blockId);
     // const block = { code: "bla bla bla" };
+    registerBlock(sid, blockId);
     socket.join(blockId);
     console.log("user", sid, "joined room", blockId);
     socket.on("leave", (room) => {
@@ -37,7 +38,7 @@ io.on("connection", (socket) => {
     });
     // write to
 
-    socket.emit("load-block", block);
+    socket.emit("load-block", block, getUsersCount(blockId));
     // Client cause text changes event, sent only to matching room.
     socket.on("send-changes", (delta) => {
       // Broadcast all the text-change, besides the client that changed.
@@ -52,7 +53,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    unRegisterBlock(sid);
     console.log("user disconnected:", socket.id);
+    console.log(blocksState);
   });
 });
 
@@ -80,11 +83,6 @@ const updateBlock = async (blockId, data) => {
     .update({ code: data })
     .then(console.log("saved changes"));
 };
-// const data1 = { code: "new code sagy sagy" };
-// db.collection("codeBlocks")
-//   .doc("codeBlock3")
-//   .update(data1)
-//   .then(console.log("saved changes"));
 
 const getCurrBlock = (blockId) => {
   const currBlock = blocksState.find((block) => block.id === blockId);
@@ -105,16 +103,14 @@ const registerBlock = (userId, blockId) => {
   console.log(currBlock);
 };
 
-const unRegisterBlock = (userId, blockId) => {
-  const currBlock = getCurrBlock(blockId);
-  if (!currBlock) {
-    console.log("block not found");
-    return;
-  }
-  const indexToRemove = currBlock.users.findIndex((user) => user === userId);
-  if (indexToRemove != -1) {
-    currBlock.users.splice(indexToRemove, 1);
-  }
+const unRegisterBlock = (userId) => {
+  blocksState.map((block) => {
+    block.users.map((user, index) => {
+      if (user === userId) {
+        block.users.splice(index, 1);
+      }
+    });
+  });
 };
 
 const getUsersCount = (blockId) => {
@@ -124,3 +120,4 @@ const getUsersCount = (blockId) => {
 };
 
 console.log("server is running...");
+console.log(blocksState);
