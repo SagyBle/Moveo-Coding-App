@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
     });
     // write to
 
-    socket.emit("load-block", block.code);
+    socket.emit("load-block", block);
     // Client cause text changes event, sent only to matching room.
     socket.on("send-changes", (delta) => {
       // Broadcast all the text-change, besides the client that changed.

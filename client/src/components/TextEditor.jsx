@@ -12,6 +12,8 @@ function TextEditor() {
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
+  const [blockTitle, setBlockTitle] = useState("");
+
   // Configure server connection.
   useEffect(() => {
     const s = io("http://localhost:3001");
@@ -84,8 +86,10 @@ function TextEditor() {
 
     socket.once("load-block", async (block) => {
       console.log("1", block);
-      quill.setText(block);
+      quill.setText(block.code);
       quill.enable();
+      console.log(block.title);
+      setBlockTitle(block.title);
     });
     socket.emit("get-block", blockId);
   }, [socket, quill, blockId]);
@@ -93,17 +97,9 @@ function TextEditor() {
   useEffect(() => {
     if (socket == null || quill == null) return;
 
-    // const interval = setInterval(() => {
     socket.emit("save-block", quill.getContents());
     console.log("from client: save the changes!");
-    // return () => clearInterval(interval);
-    // }, SAVE_INTERVAL_MS);
   }, [socket, quill]);
-
-  // useEffect(() => {
-  //   if (quill == null || socket == null) return;
-  //   socket.emit("save-block", quill.getContents().ops[0].insert);
-  // }, [saveCode]);
 
   useEffect(() => {
     if (socket == null) return;
@@ -125,6 +121,7 @@ function TextEditor() {
 
   return (
     <>
+      <span>{blockTitle}</span>
       <div>
         <div id="container" ref={wrapperRef}></div>
       </div>
