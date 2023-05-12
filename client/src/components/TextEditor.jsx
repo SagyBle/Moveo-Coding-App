@@ -8,6 +8,8 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 import "../App.css";
+import "../styles/TextEditor.css";
+import Mode from "./Mode";
 
 function TextEditor() {
   const [saveCode, setSaveCode] = useState(false);
@@ -140,21 +142,16 @@ function TextEditor() {
   };
 
   return (
-    <div>
-      <div>
-        <span>{blockTitle}</span>
-
+    <div className="container-block">
+      <div className="editor-div">
+        <Mode isFirst={isFirst} />
+        <h2>{blockTitle}</h2>
         <div
           className={isFirst ? "disp-none" : null}
           id="container"
           ref={wrapperRef}
         ></div>
       </div>
-      {isFirst ? (
-        <span>Mentor mode - Read Only</span>
-      ) : (
-        <span>Student mode - Read and Write</span>
-      )}
       <button onClick={() => updateCode()}>save code</button>
       <SyntaxHighlighter language="javascript" style={dark}>
         {text}

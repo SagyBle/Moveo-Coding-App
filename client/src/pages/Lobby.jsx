@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 function Lobby() {
   const navigate = useNavigate();
@@ -16,9 +17,9 @@ function Lobby() {
   ];
 
   return (
-    <div>
+    <div className="container-c">
       <h1>Choose Code Block</h1>
-      <div className="code-blocks">
+      <div className="buttons-div">
         {codeBlocks.map((codeBlock) => (
           <button
             onClick={() => handleClick(codeBlock.blockId)}
