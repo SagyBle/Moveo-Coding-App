@@ -4,7 +4,6 @@ import Quill from "quill";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
 import SyntaxHighlighter from "react-syntax-highlighter";
-
 import { dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 import "../App.css";
@@ -97,14 +96,11 @@ function TextEditor() {
     if (socket == null || quill == null) return;
 
     socket.once("load-block", async (block, userCount) => {
-      console.log("1", block);
       quill.setText(block.code);
       setText(quill.getText());
       quill.enable();
       setBlockTitle(block.title);
-      console.log("user count!*", userCount);
       setIsfirst(userCount === 1);
-      // console.log(isFirst);
     });
     socket.emit("get-block", blockId);
   }, [socket, quill, blockId]);
