@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import { io } from "socket.io-client";
@@ -24,7 +24,7 @@ function TextEditor() {
 
   // Configure server connection.
   useEffect(() => {
-    const s = io("http://localhost:3001");
+    const s = io("https://web-coding-app-server.onrender.com/");
     setSocket(s);
     return () => {
       s.disconnect();

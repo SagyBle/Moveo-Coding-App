@@ -17,7 +17,11 @@ var blocksState = [
 
 const io = require("socket.io")(process.env.PORT || 3001, {
   cors: {
-    origin: ["https://web-coding-app.netlify.app/", "http://localhost:3000"],
+    origin: [
+      "https://web-coding-app.netlify.app/",
+      "http://localhost:3000",
+      "https://web-coding-anp-server.onrender.com",
+    ],
     methods: ["GET", "POST"],
   },
 });
