@@ -66,7 +66,7 @@ function TextEditor() {
       setText(quill.getText());
     };
 
-    // "text-change" is quill built-in event
+    // "text-change" is quill built-in event.
     quill.on("text-change", handler);
     return () => {
       quill.off("text-change", handler);
@@ -89,6 +89,8 @@ function TextEditor() {
     };
   }, [socket, quill]);
 
+  // Check if text is equal to right code.
+  // Trim all white spaces from both texts.
   useEffect(() => {
     if (
       text.replace(/\s+/g, " ").trim() === rightCode.replace(/\s+/g, " ").trim()
@@ -107,9 +109,11 @@ function TextEditor() {
       quill.setText(block.code);
       setText(quill.getText());
       quill.enable();
+
       setBlockTitle(block.title);
       setRightCode(block.rightCode);
-      console.log("rightCode", rightCode);
+
+      // Mentor or student decision.
       setIsfirst(userCount === 1);
     });
     socket.emit("get-block", blockId);
@@ -119,14 +123,11 @@ function TextEditor() {
   useEffect(() => {
     if (socket == null) return;
     socket.emit("is-first");
-    console.log("is first from clie nt");
   }, [socket]);
 
   useEffect(() => {
     if (socket == null || quill == null) return;
-
     socket.emit("save-block", quill.getContents());
-    console.log("from client: save the changes!");
   }, [socket, quill]);
 
   useEffect(() => {
@@ -137,10 +138,10 @@ function TextEditor() {
     };
   }, []);
 
-  useEffect(() => {
-    if (quill == null) return;
-    console.log("is first?", isFirst);
-  }, [isFirst]);
+  // useEffect(() => {
+  //   if (quill == null) return;
+  //   console.log("is first?", isFirst);
+  // }, [isFirst]);
 
   const updateCode = () => {
     if (quill == null || socket == null) return;

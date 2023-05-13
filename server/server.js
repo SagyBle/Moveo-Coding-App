@@ -1,7 +1,7 @@
+// Firestore db config.
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./serviceAccountKey.json");
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -15,16 +15,6 @@ var blocksState = [
   { id: "codeBlock4", users: [] },
 ];
 
-// const io = require("socket.io")(process.env.PORT || 3001, {
-//   cors: {
-//     origin: [
-//       "https://web-coding-app.netlify.app/",
-//       "http://localhost:3000",
-//       "https://web-coding-anp-server.onrender.com",
-//     ],
-//     methods: ["GET", "POST"],
-//   },
-// });
 const io = require("socket.io")(process.env.PORT || 3001, {
   cors: {
     origin: "*",
@@ -57,7 +47,6 @@ io.on("connection", (socket) => {
 
   socket.on("get-blocks", async () => {
     const blocks = await getBlocks();
-    // blocks.forEach((doc) => console.log(doc.data()));
     const codeBlcoks = [];
     blocks.forEach((doc) => {
       codeBlcoks.push(doc.data());
@@ -72,44 +61,35 @@ io.on("connection", (socket) => {
   });
 });
 
-// return code block json object:
-// {code: ... , title: ...}
+// Return code block object.
 const getBlock = async (blockId) => {
   if (blockId == null) return;
-  // let codeBlocksRef = db.collection("codeBlocks");
-  // const block = await
 
   const block = await db
     .collection("codeBlocks")
     .doc(blockId)
     .get()
-    .catch("error while getting document");
-  // console.log("1sagy", block.data());
+    .catch(`error while getting block ${blockId}`);
 
   return block.data();
 };
 
+// Get all codeBlocks as a collection.
 const getBlocks = async () => {
   const blocks = await db
     .collection("codeBlocks")
     .get()
-    .catch("error while getting document");
-  // console.log("1sagy", block.data());
-
+    .catch("error while getting blocks");
   return blocks;
 };
 
+// Save new code.
 const updateBlock = async (blockId, data) => {
   await db
     .collection("codeBlocks")
     .doc(blockId)
     .update({ code: data })
     .then(console.log("saved changes1"));
-  // await db
-  //   .collection("codeBlocks")
-  //   .doc(blockId)
-  //   .update({ rightCode: data })
-  //   .then(console.log("saved changes2"));
 };
 
 const getCurrBlock = (blockId) => {
@@ -117,6 +97,7 @@ const getCurrBlock = (blockId) => {
   return currBlock;
 };
 
+// User register to block, before he gets in.
 const registerBlock = (userId, blockId) => {
   const currBlock = getCurrBlock(blockId);
   if (!currBlock) {
@@ -146,8 +127,6 @@ const getUsersCount = (blockId) => {
   if (!currBlock) return -1;
   return currBlock.users.length;
 };
-
-// blocks.forEach((block) => console.log(block.data()));
 
 console.log("server is running...");
 console.log(blocksState);

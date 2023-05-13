@@ -28,7 +28,7 @@ function Lobby() {
     };
   }, [socket]);
 
-  // Configure server connection.
+  // Configure server and socket connection.
   useEffect(() => {
     const s = io("https://web-coding-app-server.onrender.com/");
     setSocket(s);
