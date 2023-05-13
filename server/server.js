@@ -15,12 +15,19 @@ var blocksState = [
   { id: "codeBlock4", users: [] },
 ];
 
-const io = require("socket.io")(3001, {
+const io = require("socket.io")(process.env.PORT || 3001, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["https://web-coding-app.netlify.app/", "http://localhost:3000"],
     methods: ["GET", "POST"],
   },
 });
+
+// const io = require("socket.io")(process.env.PORT || 3001, {
+//   cors: {
+//     origin: process.env.RENDER_EXTERNAL_HOSTNAME,
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 // Configure clients connection.
 io.on("connection", (socket) => {
