@@ -15,23 +15,24 @@ var blocksState = [
   { id: "codeBlock4", users: [] },
 ];
 
-const io = require("socket.io")(process.env.PORT || 3001, {
-  cors: {
-    origin: [
-      "https://web-coding-app.netlify.app/",
-      "http://localhost:3000",
-      "https://web-coding-anp-server.onrender.com",
-    ],
-    methods: ["GET", "POST"],
-  },
-});
-
 // const io = require("socket.io")(process.env.PORT || 3001, {
 //   cors: {
-//     origin: process.env.RENDER_EXTERNAL_HOSTNAME,
+//     origin: [
+//       "https://web-coding-app.netlify.app/",
+//       "http://localhost:3000",
+//       "https://web-coding-anp-server.onrender.com",
+//     ],
 //     methods: ["GET", "POST"],
 //   },
 // });
+const io = require("socket.io")(process.env.PORT || 3001, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true,
+  },
+});
 
 // Configure clients connection.
 io.on("connection", (socket) => {
