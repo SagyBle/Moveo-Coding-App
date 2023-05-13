@@ -29,14 +29,9 @@ io.on("connection", (socket) => {
   // Client initiate "room" and editor with initial code block content.
   socket.on("get-block", async (blockId) => {
     const block = await getBlock(blockId);
-    // const block = { code: "bla bla bla" };
     registerBlock(sid, blockId);
     socket.join(blockId);
     console.log("user", sid, "joined room", blockId);
-    socket.on("leave", (room) => {
-      console.log(`Client left room ${room}`);
-    });
-    // write to
 
     socket.emit("load-block", block, getUsersCount(blockId));
     // Client cause text changes event, sent only to matching room.
@@ -46,13 +41,19 @@ io.on("connection", (socket) => {
     });
 
     socket.on("save-block", (data) => updateBlock(blockId, data));
-
-    socket.on("try", () => {
-      console.log("try!");
-    });
   });
 
-  socket.on("disconnect", () => {
+  socket.on("get-blocks", async () => {
+    const blocks = await getBlocks();
+    // blocks.forEach((doc) => console.log(doc.data()));
+    const codeBlcoks = [];
+    blocks.forEach((doc) => {
+      codeBlcoks.push(doc.data());
+    });
+    socket.emit("receive-blocks", codeBlcoks);
+  });
+
+  socket.on("disconnect", (something) => {
     unRegisterBlock(sid);
     console.log("user disconnected:", socket.id);
     console.log(blocksState);
@@ -76,12 +77,27 @@ const getBlock = async (blockId) => {
   return block.data();
 };
 
+const getBlocks = async () => {
+  const blocks = await db
+    .collection("codeBlocks")
+    .get()
+    .catch("error while getting document");
+  // console.log("1sagy", block.data());
+
+  return blocks;
+};
+
 const updateBlock = async (blockId, data) => {
   await db
     .collection("codeBlocks")
     .doc(blockId)
     .update({ code: data })
-    .then(console.log("saved changes"));
+    .then(console.log("saved changes1"));
+  // await db
+  //   .collection("codeBlocks")
+  //   .doc(blockId)
+  //   .update({ rightCode: data })
+  //   .then(console.log("saved changes2"));
 };
 
 const getCurrBlock = (blockId) => {
@@ -99,8 +115,7 @@ const registerBlock = (userId, blockId) => {
   if (!currBlock.users.some((user) => user === userId)) {
     currBlock.users.push(userId);
   }
-
-  console.log(currBlock);
+  console.log(blocksState);
 };
 
 const unRegisterBlock = (userId) => {
@@ -111,6 +126,7 @@ const unRegisterBlock = (userId) => {
       }
     });
   });
+  console.log("unRegisterBlock", blocksState);
 };
 
 const getUsersCount = (blockId) => {
@@ -118,6 +134,8 @@ const getUsersCount = (blockId) => {
   if (!currBlock) return -1;
   return currBlock.users.length;
 };
+
+// blocks.forEach((block) => console.log(block.data()));
 
 console.log("server is running...");
 console.log(blocksState);

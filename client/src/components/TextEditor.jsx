@@ -11,10 +11,7 @@ import "../styles/TextEditor.css";
 import Mode from "./Mode";
 
 function TextEditor() {
-  const [saveCode, setSaveCode] = useState(false);
-
   const { blockId } = useParams();
-  const [socketId, setSocketId] = useState();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
@@ -22,13 +19,14 @@ function TextEditor() {
   const [isFirst, setIsfirst] = useState(true);
   const [text, setText] = useState("");
 
+  const [showSmiley, setShowSmiley] = useState(false);
+  const [rightCode, setRightCode] = useState("");
+
   // Configure server connection.
   useEffect(() => {
     const s = io("http://localhost:3001");
     setSocket(s);
-    console.log("user", socketId, " connected :)");
     return () => {
-      console.log("user disconnected :(");
       s.disconnect();
     };
   }, []);
@@ -91,6 +89,16 @@ function TextEditor() {
     };
   }, [socket, quill]);
 
+  useEffect(() => {
+    if (
+      text.replace(/\s+/g, " ").trim() === rightCode.replace(/\s+/g, " ").trim()
+    ) {
+      setShowSmiley(true);
+    } else {
+      setShowSmiley(false);
+    }
+  }, [text]);
+
   // Init code block.
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -100,6 +108,8 @@ function TextEditor() {
       setText(quill.getText());
       quill.enable();
       setBlockTitle(block.title);
+      setRightCode(block.rightCode);
+      console.log("rightCode", rightCode);
       setIsfirst(userCount === 1);
     });
     socket.emit("get-block", blockId);
@@ -149,7 +159,8 @@ function TextEditor() {
         ></div>
       </div>
       <button onClick={() => updateCode()}>save code</button>
-      <SyntaxHighlighter language="javascript" style={dark}>
+      {showSmiley && <h1>:)</h1>}
+      <SyntaxHighlighter language="javascript" style={dark} tabSize={2}>
         {text}
       </SyntaxHighlighter>
     </div>
