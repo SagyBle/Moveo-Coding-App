@@ -46,6 +46,8 @@ io.on("connection", (socket) => {
     socket.on("save-block", (data) => updateBlock(blockId, data));
   });
 
+  //
+
   socket.on("get-blocks", async () => {
     const blocks = await getBlocks();
     // blocks.forEach((doc) => console.log(doc.data()));
