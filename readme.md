@@ -1,4 +1,4 @@
-# Web-Coding App
+# Web Coding App
 
 A web-based java script code collaboration tool, that allows multiple users to collaborate on code in real-time.
 
@@ -18,13 +18,13 @@ A web-based java script code collaboration tool, that allows multiple users to c
 - Node.js
 - Quill
 - Socket.IO
-- Firebase Firestore database.
+- Firebase Firestore database
 
 ## Deployment
 
 The client is deployed on Netlify and can be accessed at the following URL: https://web-coding-app.netlify.app/
 
-The server is deployed on Render.com
+The server is deployed on render.com
 
 
 ## Contact Information
