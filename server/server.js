@@ -8,6 +8,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// User-wise codeBlocks state
 var blocksState = [
   { id: "codeBlock1", users: [] },
   { id: "codeBlock2", users: [] },
@@ -62,19 +63,14 @@ io.on("connection", (socket) => {
   });
 });
 
-// return code block json object:
-// {code: ... , title: ...}
 const getBlock = async (blockId) => {
   if (blockId == null) return;
-  // let codeBlocksRef = db.collection("codeBlocks");
-  // const block = await
 
   const block = await db
     .collection("codeBlocks")
     .doc(blockId)
     .get()
     .catch("error while getting document");
-  // console.log("1sagy", block.data());
 
   return block.data();
 };
@@ -84,7 +80,6 @@ const getBlocks = async () => {
     .collection("codeBlocks")
     .get()
     .catch("error while getting document");
-  // console.log("1sagy", block.data());
 
   return blocks;
 };
@@ -95,11 +90,6 @@ const updateBlock = async (blockId, data) => {
     .doc(blockId)
     .update({ code: data })
     .then(console.log("saved changes1"));
-  // await db
-  //   .collection("codeBlocks")
-  //   .doc(blockId)
-  //   .update({ rightCode: data })
-  //   .then(console.log("saved changes2"));
 };
 
 const getCurrBlock = (blockId) => {
@@ -136,8 +126,6 @@ const getUsersCount = (blockId) => {
   if (!currBlock) return -1;
   return currBlock.users.length;
 };
-
-// blocks.forEach((block) => console.log(block.data()));
 
 console.log("server is running...");
 console.log(blocksState);

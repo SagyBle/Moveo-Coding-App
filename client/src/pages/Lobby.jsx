@@ -31,7 +31,6 @@ function Lobby() {
   // Configure server and socket connection.
   useEffect(() => {
     const s = io("https://web-coding-app-server.onrender.com/");
-    // const s = io("http://localhost:3001");
     setSocket(s);
     return () => {
       s.disconnect();
