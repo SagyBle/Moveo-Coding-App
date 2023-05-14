@@ -25,7 +25,6 @@ function TextEditor() {
   // Configure server connection.
   useEffect(() => {
     const s = io("https://web-coding-app-server.onrender.com/");
-    // const s = io("http://localhost:3001");
     setSocket(s);
     return () => {
       s.disconnect();
@@ -126,12 +125,12 @@ function TextEditor() {
     socket.emit("is-first");
   }, [socket]);
 
-  useEffect(() => {
-    if (socket == null || quill == null) return;
+  // useEffect(() => {
+  //   if (socket == null || quill == null) return;
 
-    socket.emit("save-block", quill.getContents());
-    console.log("from client: save the changes!");
-  }, [socket, quill]);
+  //   socket.emit("save-block", quill.getContents());
+  //   console.log("from client: save the changes!");
+  // }, [socket, quill]);
 
   useEffect(() => {
     if (socket == null) return;
