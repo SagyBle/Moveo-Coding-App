@@ -19,7 +19,6 @@ function Lobby() {
     socket.emit("get-blocks");
     const handler = (blocks) => {
       setCodeBlocks(blocks);
-      console.log(blocks);
     };
 
     socket.on("receive-blocks", handler);
@@ -41,7 +40,7 @@ function Lobby() {
     <div className="container-c">
       <h1>Choose Code Block</h1>
       <div className="buttons-div">
-        {codeBlocks.length !== 0 ? (
+        {codeBlocks && codeBlocks.length !== 0 ? (
           codeBlocks.map((codeBlock) => (
             <button
               onClick={() => handleButtonClick(codeBlock.id)}

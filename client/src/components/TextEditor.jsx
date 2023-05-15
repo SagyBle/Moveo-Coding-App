@@ -106,6 +106,7 @@ function TextEditor() {
     if (socket == null || quill == null) return;
 
     socket.once("load-block", async (block, userCount) => {
+      console.log("udefined?", block);
       quill.setText(block.code);
       setText(quill.getText());
       quill.enable();
